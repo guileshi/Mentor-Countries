@@ -43,5 +43,5 @@ Users should be able to:
 
 ## Author
 
-- Frontend Mentor - [@yourusername](https://www.frontendmentor.io/profile/guileshi)
-- Twitter - [@yourusername](https://www.twitter.com/guileshii)
+- Frontend Mentor - [@guileshi](https://www.frontendmentor.io/profile/guileshi)
+- Twitter - [@guileshii](https://www.twitter.com/guileshii)

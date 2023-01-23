@@ -1,0 +1,97 @@
+@import 'main.scss';
+
+main {
+
+    .ul__cards{
+        padding-left: unset;
+    }
+
+    .row{
+        --bs-gutter-x: 5rem;
+    }
+
+    // card
+    .card__country {
+        width: 100%;
+
+        box-shadow: $shadow;
+
+        background-color: $white;
+
+        border-radius: 4px;
+
+        margin-bottom: 80px;
+
+        transition: all $transition;
+
+        cursor: pointer;
+
+        &:hover {
+            transform: scale(1.05);
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+
+        img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+
+        .card__details {
+            padding: 20px 16px 40px 16px;
+
+            .card__title {
+                @include font(16px, 800, $nunito, $dark-blue);
+
+                margin-bottom: 16px;
+            }
+
+            ul {
+                padding-left: 0 !important;
+
+                li {
+                    span {
+                        @include font(14px, 800, $nunito, $dark-blue);
+                    }
+
+                    @include font(14px, 300, $nunito, $dark-blue);
+
+                    margin-bottom: 4px;
+                }
+            }
+        }
+
+
+    }
+
+    &.isDarkmode {
+        .card__country {
+            background-color: $dark-blue;
+
+            transition: all $transition;
+
+            .card__details {
+                .card__title {
+                    color: $light-grey  !important;
+                }
+
+                ul {
+                    li {
+                        span {
+                            color: $light-grey  !important;
+
+                        }
+
+                        color: $light-grey  !important;
+                    }
+                }
+            }
+        }
+    }
+}

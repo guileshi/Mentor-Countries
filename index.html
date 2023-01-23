@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Where in the World?</title>
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+
+    <link rel="stylesheet" href="scss/main.css">
+
+    <link rel="stylesheet" href="scss/card.css">
+
+    <script src="https://kit.fontawesome.com/e6fe01e062.js" crossorigin="anonymous"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+</head>
+
+<body id="body">
+
+    <div id="app">
+
+        <header :class="{isDarkmode: isDarkmode}" class="myContainer">
+            <h1>
+                Where in the world?
+            </h1>
+
+            <button type="button" class="darkmode--toggle" v-if="!isDarkmode" @click="ToggleDarkmode()">
+                <i class="fa-solid fa-moon"></i>
+                Dark Mode
+            </button>
+
+            <button type="button" class="darkmode--toggle" v-else @click="ToggleDarkmode()">
+                <i class="fa-solid fa-sun"></i>
+                Light Mode
+            </button>
+        </header>
+
+        <main :class="{isDarkmode: isDarkmode}" class="myContainer">
+
+            <div class="search__group">
+                <div class="input__group">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" class="search" placeholder="Search for a country..." v-model="countryInput"
+                        @input="GetInputCountries">
+                </div>
+
+                <div class="filter">
+                    <button type="button" class="filter--button" @click="ActiveSelect()">
+                        {{filter}}
+                        <i class="fa-solid fa-angle-down"></i>
+                    </button>
+                    <ul v-if="selectActive">
+                        <li><button type="button" @click="GetFilter('')" v-if="filter != 'Filter by Region'">Filter by
+                                Region</button></li>
+                        <li><button type="button" @click="GetFilter('Africa')">Africa</button></li>
+                        <li><button type="button" @click="GetFilter('Americas')">America</button></li>
+                        <li><button type="button" @click="GetFilter('Asia')">Asia</button></li>
+                        <li><button type="button" @click="GetFilter('Europe')">Europe</button></li>
+                        <li><button type="button" @click="GetFilter('Oceania')">Oceania</button></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="loading" v-if="loading">
+                <div class="lds-ellipsis">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+
+            <ul class="ul__cards row" v-else-if="countries.length >= 1">
+                <li v-for="(country, index) in countries" :key="'country' + index" class="col-lg-3 col-md-6 col-12">
+                    <div class="card__country" @click="GetCountry(country.name.common)">
+                        <img :src="country.flags.png" :alt="country.name.common + ' flag country'">
+                        <div class="card__details">
+                            <div class="card__title">
+                                {{country.name.common}}
+                            </div>
+                            <ul>
+                                <li>
+                                    <span>Population:</span> {{country.population}}
+                                </li>
+
+                                <li>
+                                    <span>Region:</span> {{country.region}}
+                                </li>
+
+                                <li v-if="country.capital && country.capital.length > 0">
+                                    <span>Capital:</span> {{country.capital[0]}}
+                                </li>
+
+                                <li v-else>
+                                    <span>Capital:</span> None
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <p class="not__found" v-else>
+                No country was found!
+            </p>
+
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous"></script>
+
+    <script src="https://unpkg.com/vue@3"></script>
+
+    <script type="module">
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    isDarkmode: false,
+                    filter: "Filter by Region",
+                    selectActive: false,
+                    countries: [],
+                    countryInput: '',
+                    timer: 1,
+                    interval: "",
+                    loading: true,
+                }
+            },
+
+            methods: {
+                ToggleDarkmode() {
+                    if (this.isDarkmode) {
+                        localStorage.setItem('darkmode', false);
+                        this.isDarkmode = false;
+                    } else {
+                        localStorage.setItem('darkmode', true);
+                        this.isDarkmode = true;
+                    }
+                },
+
+                ActiveSelect() {
+                    this.selectActive = !this.selectActive;
+                },
+
+                GetDarkmode() {
+                    var darkmode = localStorage.getItem('darkmode');
+
+                    if (darkmode == 'true') {
+                        this.isDarkmode = true;
+                    } else {
+                        this.isDarkmode = false;
+                    }
+                },
+
+                GetFilter(item) {
+                    // if (this.filtered.indexOf(item) > 0) {
+                    //     this.filtered = [];
+                    // } else {
+                    //     this.filtered = [];
+                    //     this.filtered.push(item);
+                    // }
+
+                    const api = {
+                        type: 'region',
+                        input: item,
+                    }
+
+                    this.GetCountries(api)
+
+                    this.ActiveSelect();
+                },
+
+                removeArray(countries) {
+                    for (var i = 0; i < countries.length; i++) {
+                        console.log(countries[i].capital)
+                    }
+
+                    return countries;
+                },
+
+                async GetCountries(value) {
+                    var url;
+
+                    this.loading = true;
+
+                    if (value) {
+                        if (value.input) {
+                            if (value.type == 'filter') {
+                                url = "https://restcountries.com/v3.1/name/" + value.input
+                            } else if (value.type == 'region') {
+                                url = "https://restcountries.com/v3.1/region/" + value.input
+                            }
+                        } else {
+                            url = "https://restcountries.com/v3.1/all";
+                        }
+                    } else {
+                        url = "https://restcountries.com/v3.1/all";
+                    }
+
+                    const config = {
+                        methods: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+
+                    await fetch(url, config).then((response) => response.json()).then((data) => {
+                        this.countries = data
+                        this.loading = false;
+                    })
+
+                    this.loading = false;
+                },
+
+                async GetInputCountries() {
+                    this.selected = false;
+
+                    this.timer = 1;
+
+                    clearInterval(this.interval);
+
+                    this.interval = setInterval(() => {
+                        this.timer -= 1;
+
+                        if (this.timer <= 0) {
+                            const api_value = {
+                                input: this.countryInput,
+                                type: 'filter',
+                            }
+
+                            this.GetCountries(api_value);
+                            clearInterval(this.interval);
+                        }
+                    }, 450);
+                },
+
+                GetCountry(name) {
+                    window.location.href = "/detail.html?country=" + name
+                }
+            },
+
+            watch: {
+                isDarkmode(newValue) {
+                    var body = document.getElementById("body");
+
+                    if (newValue) {
+                        body.classList.add("isDarkmode");
+                    } else {
+                        body.classList.remove("isDarkmode");
+                    }
+                },
+            },
+
+            mounted() {
+                this.GetCountries();
+            },
+            beforeMount() {
+                this.GetDarkmode();
+            }
+        }).mount('#app')
+    </script>
+
+</body>
+
+</html>

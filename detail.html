@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Where in the World?</title>
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+
+    <link rel="stylesheet" href="scss/main.css">
+    <link rel="stylesheet" href="scss/details.css">
+
+    <script src="https://kit.fontawesome.com/e6fe01e062.js" crossorigin="anonymous"></script>
+
+</head>
+
+<body id="body">
+
+    <div id="app">
+
+        <header :class="{isDarkmode: isDarkmode}" class="myContainer">
+            <h1>
+                Where in the world?
+            </h1>
+
+            <button type="button" class="darkmode--toggle" v-if="!isDarkmode" @click="ToggleDarkmode()">
+                <i class="fa-solid fa-moon"></i>
+                Dark Mode
+            </button>
+
+            <button type="button" class="darkmode--toggle" v-else @click="ToggleDarkmode()">
+                <i class="fa-solid fa-sun"></i>
+                Light Mode
+            </button>
+        </header>
+
+        <main :class="{isDarkmode: isDarkmode}" class="myContainer">
+
+            <button type="button" class="back" title="Back">
+                <i class="fa-solid fa-arrow-left icon"></i> Back
+
+                <a href="/index.html" class="link"></a>
+            </button>
+
+            <div class="loading" v-if="loading">
+                <div class="lds-ellipsis">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+
+            <div v-else>
+                <div class="details" v-if="country">
+                    <div class="flag">
+                        <img :src="country.flags.svg" alt="">
+                    </div>
+                    <div class="about">
+                        <h2 class="title">
+                            {{country.name.common}}
+                        </h2>
+
+                        <ul class="info">
+                            <li>
+                                Native Name: <span>{{country.altSpellings[1]}}</span>
+                            </li>
+                            <li>
+                                Population: <span>{{country.population}}</span>
+
+                            </li>
+                            <li>
+                                Region: <span>{{country.region}}</span>
+                            </li>
+                            <li>
+                                Sub Region: <span>{{country.subregion}}</span>
+                            </li>
+                            <li>
+                                Capital: <span v-for="item in country.capital" :key="item">{{item}}</span>
+                            </li>
+                            <li>
+                                Top Level Domain: <span v-for="item in country.tld" :key="item">{{item}}</span>
+                            </li>
+                            <li>
+                                Currencies: <span v-for="item in country.currencies" :key="item">{{item.name}}</span>
+                            </li>
+                            <li>
+                                Languages: <span v-for="item in country.languages" :key="item">{{item}}</span>
+                            </li>
+                        </ul>
+
+
+
+                        <div class="border__countries">
+                            <span>
+                                Border Countries:
+                            </span>
+                            <ul>
+                                <li v-for="item in country.borders" :key="item" role="button" type="button"
+                                    @click="GetLinkAcronym(item)">
+                                    {{item}}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/vue@3"></script>
+
+    <script type="module">
+        const { createApp } = Vue
+
+        createApp({
+            data() {
+                return {
+                    isDarkmode: false,
+                    country: {
+                        name: {
+                        },
+                        altSpellings: ['acronym', 'name'],
+                        flags: {
+                            svg: '',
+                        }
+                    },
+                    loading: false,
+                }
+            },
+
+            methods: {
+                ToggleDarkmode() {
+                    if (this.isDarkmode) {
+                        localStorage.setItem('darkmode', false);
+                        this.isDarkmode = false;
+                    } else {
+                        localStorage.setItem('darkmode', true);
+                        this.isDarkmode = true;
+                    }
+                },
+
+                GetDarkmode() {
+                    var darkmode = localStorage.getItem('darkmode');
+
+                    if (darkmode == 'true') {
+                        this.isDarkmode = true;
+                    } else {
+                        this.isDarkmode = false;
+                    }
+                },
+
+                async GetCountries() {
+                    this.loading = true;
+                    var url = window.location.search;
+                    const urlParams = new URLSearchParams(url);
+                    const response = await fetch("https://restcountries.com/v3.1/name/" + urlParams.get('country'));
+                    const myJson = await response.json();
+
+                    this.country = myJson[0];
+                    this.loading = false;
+                },
+
+                async GetLinkAcronym(code) {
+                    const url = "https://restcountries.com/v3.1/alpha?codes=" + code;
+
+                    const config = {
+                        methods: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+
+                    await fetch(url, config).then((response) => response.json()).then((data) => {
+                        window.location.href = '/detail.html?country=' + data[0].name.common;
+                    })
+                }
+            },
+
+            watch: {
+                isDarkmode(newValue) {
+                    var body = document.getElementById("body");
+
+                    if (newValue) {
+                        body.classList.add("isDarkmode");
+                    } else {
+                        body.classList.remove("isDarkmode");
+                    }
+                }
+            },
+
+            mounted() {
+                this.GetCountries();
+            },
+            beforeMount() {
+                this.GetDarkmode();
+            }
+
+        }).mount('#app')
+    </script>
+
+</body>
+
+</html>

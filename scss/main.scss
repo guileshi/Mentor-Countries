@@ -1,0 +1,384 @@
+// Importe da Fonte
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;600;800&display=swap');
+
+@import '_colors.scss';
+@import '_animations.scss';
+
+$nunito: 'Nunito Sans', sans-serif;
+$shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+$transition: .2s;
+
+@mixin font($size, $weight, $family, $color) {
+    font-size: $size;
+    font-family: $family;
+    font-weight: $weight;
+    color: $color;
+}
+
+* {
+    font-family: 'Nunito Sans', sans-serif;
+
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+li {
+    list-style: none;
+}
+
+body {
+    background-color: $light-grey;
+
+    transition: background-color $transition;
+
+    &.isDarkmode {
+        background-color: $very-dark-blue !important;
+    }
+}
+
+button,
+input {
+    background-color: unset;
+    border: unset;
+}
+
+header {
+    padding-top: 32px;
+    padding-bottom: 32px;
+
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    box-shadow: $shadow ;
+
+    background-color: $white;
+
+    transition: background-color $transition;
+
+    h1 {
+        @include font(24px, 800, $nunito, $black);
+    }
+
+    .darkmode--toggle {
+        display: flex;
+        align-items: center;
+
+        cursor: pointer;
+
+        transition: all $transition;
+
+        &:active {
+            transform: scale(0.95);
+        }
+
+        i {
+            margin-right: 8px;
+            color: $black;
+        }
+
+        @include font(16px, 600, $nunito, $black);
+    }
+
+    &.isDarkmode {
+        background-color: $dark-blue;
+
+        h1 {
+            color: $light-grey !important;
+        }
+
+        i {
+            color: $light-grey;
+        }
+
+        .darkmode--toggle {
+            color: $light-grey !important;
+        }
+    }
+}
+
+main {
+    .not__found {
+        color: $dark-blue;
+    }
+
+    .search__group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        margin-top: 40px;
+        margin-bottom: 40px;
+
+        .input__group {
+            width: 35%;
+
+            display: flex;
+            align-items: center;
+
+            background-color: $white;
+
+            box-shadow: $shadow;
+
+            border-radius: 4px;
+
+            padding-left: 24px;
+            padding-right: 24px;
+
+            height: 48px;
+
+            transition: all $transition;
+
+            i {
+                margin-right: 24px;
+                color: $dark-grey;
+            }
+
+            .search {
+                height: 100%;
+                width: 100%;
+
+                @include font(14px, 600, $nunito, $dark-grey);
+
+                &:focus-visible,
+                &:active {
+                    outline: unset;
+                }
+            }
+        }
+
+        .filter {
+            height: 48px;
+            min-width: 150px;
+            position: relative;
+
+            .filter--button {
+                background-color: $white;
+
+                box-shadow: $shadow;
+
+                border-radius: 4px;
+
+                padding-left: 16px;
+                padding-right: 16px;
+
+                @include font(14px, 600, $nunito, $black);
+
+                height: 100%;
+                width: 100%;
+
+                cursor: pointer;
+
+                transition: all $transition;
+
+                &:hover {
+                    background-color: $light-grey;
+                }
+
+                &:active {
+                    transform: scale(0.95);
+                }
+
+                i {
+                    margin-left: 40px;
+                }
+            }
+
+            ul {
+                position: absolute;
+                top: calc(100% + 4px);
+
+                background-color: $white;
+                padding: 16px;
+
+                width: 100%;
+
+                box-shadow: $shadow;
+
+                border-radius: 4px;
+
+                opacity: 0;
+
+                transform: translateY(-20px);
+
+                transition: all $transition;
+
+                animation: $transition slide forwards;
+
+                li {
+                    margin-bottom: 8px;
+
+
+                    button {
+                        transition: all $transition;
+
+                        @include font(14px, 600, $nunito, $black);
+
+                        cursor: pointer;
+                    }
+
+                }
+            }
+        }
+    }
+
+    &.isDarkmode {
+        .not__found {
+            color: $light-grey !important;
+        }
+
+        .input__group {
+            background-color: $dark-blue;
+
+            i {
+                color: $light-grey;
+            }
+
+            .search {
+                color: $light-grey !important;
+
+                &::placeholder {
+                    color: $light-grey !important;
+                }
+            }
+        }
+
+        .filter {
+            .filter--button {
+                background-color: $dark-blue;
+                color: $light-grey !important;
+
+                &:hover {
+                    background-color: $dark-blue;
+                    color: $light-grey !important;
+                }
+
+            }
+
+            ul {
+                background-color: $dark-blue;
+
+                li {
+                    button {
+                        color: $light-grey !important;
+                    }
+                }
+            }
+        }
+
+        .loading {
+
+            .lds-ellipsis div {
+                background: $light-grey;
+            }
+        }
+    }
+
+    .loading {
+        display: flex;
+        justify-content: center;
+
+        .lds-ellipsis {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .lds-ellipsis div {
+            position: absolute;
+            top: 33px;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            background: $very-dark-blue;
+            animation-timing-function: cubic-bezier(0, 1, 1, 0);
+        }
+
+        .lds-ellipsis div:nth-child(1) {
+            left: 8px;
+            animation: lds-ellipsis1 0.6s infinite;
+        }
+
+        .lds-ellipsis div:nth-child(2) {
+            left: 8px;
+            animation: lds-ellipsis2 0.6s infinite;
+        }
+
+        .lds-ellipsis div:nth-child(3) {
+            left: 32px;
+            animation: lds-ellipsis2 0.6s infinite;
+        }
+
+        .lds-ellipsis div:nth-child(4) {
+            left: 56px;
+            animation: lds-ellipsis3 0.6s infinite;
+        }
+
+        @keyframes lds-ellipsis1 {
+            0% {
+                transform: scale(0);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes lds-ellipsis3 {
+            0% {
+                transform: scale(1);
+            }
+
+            100% {
+                transform: scale(0);
+            }
+        }
+
+        @keyframes lds-ellipsis2 {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(24px, 0);
+            }
+        }
+    }
+}
+
+@media (max-width:1023.98px) {
+    .myContainer {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    main {
+
+        .search__group {
+            display: block !important;
+
+            .input__group {
+                width: 100% !important;
+                margin-bottom: 16px;
+            }
+
+        }
+    }
+}
+
+@media (max-width:1366.98px) {
+    .myContainer {
+        padding-left: 4rem;
+        padding-right: 4rem;
+    }
+}
+
+@media (min-width:1367.98px) {
+    .myContainer {
+        padding-left: 8rem;
+        padding-right: 8rem;
+    }
+}
